@@ -4,11 +4,15 @@ import 'api_key.dart';
 import 'models.dart';
 
 void main() async {
-  String watched = 'casino royale';
+  String watched = 'interstellar';
   MediaType recommendWhat = MediaType.book;
-  // var recommended = await recommend(watched, recommendWhat);
-  var result = await findMedia('Casino royale', recommendWhat);
-  print(result);
+  var recommended = await recommend(watched, recommendWhat, 5);
+  var listOfMedia = recommended.split('|');
+  List<dynamic> results = List.empty(growable: true);
+  for (var i in listOfMedia) {
+    results.add(await findMedia(i, recommendWhat));
+  }
+  print(results);
 }
 
 String helperEnumToString(MediaType mediaType) {
@@ -22,10 +26,11 @@ String helperEnumToString(MediaType mediaType) {
   }
 }
 
-Future<String> recommend(String watched, MediaType recommendWhat) async {
+Future<String> recommend(String watched, MediaType recommendWhat, int n) async {
   final url = Uri.parse('https://api.openai.com/v1/completions');
   Map<String, String> headers = {'Content-Type': 'application/json;charset=UTF-8', 'Charset': 'utf-8', 'Authorization': 'Bearer $openAiApiKey'};
-  String promptData = "give me just the ${helperEnumToString(recommendWhat)} name ... i recently watched $watched and i liked it recommend a ${helperEnumToString(recommendWhat)} that is similar";
+  String promptData =
+      "give me just the ${helperEnumToString(recommendWhat)} name $n examples in the format ex1|ex2|ex3 ... i recently watched $watched and i liked it recommend a ${helperEnumToString(recommendWhat)} that is similar";
 
   final data = jsonEncode({"model": "text-davinci-003", "prompt": promptData, "temperature": 0.4, "max_tokens": 64, "top_p": 1, "frequency_penalty": 0, "presence_penalty": 0});
   var response = await http.post(url, headers: headers, body: data);
@@ -62,7 +67,6 @@ Future<dynamic> findMedia(String query, MediaType mediaType) async {
     final baseUrl = 'https://api.themoviedb.org/3';
     final mediaPath = mediaType == MediaType.movie ? '/movie' : '/tv';
     final response = await http.get(Uri.parse('$baseUrl/search/$mediaPath?api_key=$tmdbApiKey&query=$query'));
-
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = jsonDecode(response.body);
 

@@ -4,28 +4,84 @@ enum MediaType {
   book,
 }
 
+Map<int, String> genreLookup = {
+  28: "Action",
+  12: "Adventure",
+  16: "Animation",
+  35: "Comedy",
+  80: "Crime",
+  99: "Documentary",
+  18: "Drama",
+  10751: "Family",
+  14: "Fantasy",
+  36: "History",
+  27: "Horror",
+  10402: "Music",
+  9648: "Mystery",
+  10749: "Romance",
+  878: "Science Fiction",
+  10770: "TV Movie",
+  53: "Thriller",
+  10752: "War",
+  37: "Western",
+};
+
+// class Movie {
+//   final int id;
+//   final String title;
+//   final String overview;
+//   final List<String>? genres;
+//   final String releaseDate;
+//   final String? posterPath;
+//   final double rating;
+
+//   Movie({
+//     required this.id,
+//     required this.title,
+//     required this.overview,
+//     this.genres = const [],
+//     required this.releaseDate,
+//     this.posterPath,
+//     required this.rating,
+//   });
+
+//   factory Movie.fromJson(Map<String, dynamic> json) {
+//     List<String>? genres = List<String>.from((json['genres'] ?? []).map((genre) => genre['name'].toString()));
+
+//     return Movie(
+//       id: json['id'],
+//       title: json['title'],
+//       overview: json['overview'],
+//       genres: genres,
+//       releaseDate: json['release_date'],
+//       posterPath: 'https://image.tmdb.org/t/p/w500${json['poster_path']}',
+//       rating: json['vote_average'].toDouble(),
+//     );
+//   }
+// }
+
 class Movie {
   final int id;
   final String title;
   final String overview;
-  final List<String>? genres;
+  final List<String> genres;
   final String releaseDate;
-  final String? posterPath;
+  final String posterPath;
   final double rating;
 
   Movie({
     required this.id,
     required this.title,
     required this.overview,
-    this.genres = const [],
+    required this.genres,
     required this.releaseDate,
-    this.posterPath,
+    required this.posterPath,
     required this.rating,
   });
 
   factory Movie.fromJson(Map<String, dynamic> json) {
-    List<dynamic>? genreList = json['genres'];
-    List<String>? genres = genreList?.map((genre) => genre['name'].toString()).toList();
+    List<dynamic> genreIds = json['genre_ids'];
+    List<String> genres = genreIds.map((id) => genreLookup[id] ?? "").toList();
 
     return Movie(
       id: json['id'],
