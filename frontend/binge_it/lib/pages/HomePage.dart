@@ -6,6 +6,16 @@ import 'package:binge_it/bin/binge_it_backend.dart';
 import '../widgets/CustomNavBar.dart';
 import '../widgets/Dropdown.dart';
 
+Future<List<dynamic>> recommendation(String media, MediaType m, int n) async {
+  var recommended = await recommend(media, m, n);
+  var listOfMedia = recommended.split('|');
+  List<dynamic> results = List.empty(growable: true);
+  for (var i in listOfMedia) {
+    results.add(await findMedia(i, m));
+  }
+  return results;
+}
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -40,10 +50,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                       Text(
                         'BingeIt ',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 28,
-                            fontWeight: FontWeight.w500),
+                        style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w500),
                       ),
                       Text(
                         'Want some suggestions ?',
@@ -75,10 +82,7 @@ class _HomePageState extends State<HomePage> {
               ),
               child: const Text(
                 "Enter your Recently Watched Movie ",
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 22,
-                    fontWeight: FontWeight.w500),
+                style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.w500),
               ),
             ),
             SizedBox(
@@ -88,15 +92,12 @@ class _HomePageState extends State<HomePage> {
               height: 60,
               width: 350,
               alignment: Alignment.center,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(50),
-                  color: Colors.white,
-                  border: Border.all(color: Colors.black, width: 4)),
+              decoration: BoxDecoration(borderRadius: BorderRadius.circular(50), color: Colors.white, border: Border.all(color: Colors.black, width: 4)),
               child: Center(
                 child: TextField(
                   onChanged: (String value) {
                     setState(() {
-                       abc = value;
+                      abc = value;
                     });
                   },
                 ),
@@ -120,17 +121,16 @@ class _HomePageState extends State<HomePage> {
                 color: Color(0xFF292B37),
               ),
               child: InkWell(
-                onTap: () {
-                  await recommendation();
+                onTap: () async {
+                  List<dynamic> recommendationBook = await recommendation(abc, MediaType.book, 5);
+                  List<dynamic> recommendationMovie = await recommendation(abc, MediaType.movie, 5);
+                  List<dynamic> recommendationTV = await recommendation(abc, MediaType.tv, 5);
                   Navigator.pushNamed(context, "moviePage");
                 },
                 child: Center(
                   child: Text(
                     "Submit",
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 22,
-                        fontWeight: FontWeight.w500),
+                    style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.w500),
                   ),
                 ),
               ),
@@ -139,9 +139,5 @@ class _HomePageState extends State<HomePage> {
         )),
       ),
     );
-  }
-
-  Future<void> recommendation() async {
-    var recommendedTv = await recommend(abc, MediaType.tv, 5);
   }
 }
