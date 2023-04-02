@@ -6,8 +6,8 @@ import 'models.dart';
 void main() async {
   String watched = 'casino royale';
   MediaType recommendWhat = MediaType.book;
-  var recommended = await recommend(watched, recommendWhat);
-  var result = await findMedia(recommended, recommendWhat);
+  // var recommended = await recommend(watched, recommendWhat);
+  var result = await findMedia('Casino royale', recommendWhat);
   print(result);
 }
 
@@ -45,13 +45,15 @@ Future<dynamic> findMedia(String query, MediaType mediaType) async {
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = jsonDecode(response.body);
-
+      // print(data['docs'].first);
       if (data['docs'].isEmpty) {
         throw Exception('No results found');
       }
-
-      final List<dynamic> results = data['docs'];
-      final Book book = Book.fromJson(results.first);
+      var bookData = data['docs'].first;
+      if (bookData == null) {
+        throw Exception('Failed to load media');
+      }
+      final Book book = Book.fromJson(bookData);
       return book;
     } else {
       throw Exception('Failed to load media');

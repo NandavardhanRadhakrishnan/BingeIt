@@ -64,15 +64,15 @@ class TVShow {
 
 class Book {
   final String title;
-  final String author;
+  final List<String> authors;
   final String isbn;
   final String coverImageUrl;
   final List<String> categories;
 
   factory Book.fromJson(Map<String, dynamic> json) {
     final String title = json['title'] != null ? json['title'] : '';
-    final List<dynamic> authors = json['author_name'] ?? [];
-    final String author = authors.isNotEmpty ? authors.first : '';
+    final List<dynamic> authorsJson = json['author_name'] ?? [];
+    final List<String> authors = authorsJson.map((author) => author.toString()).toList();
     final String isbn = json['isbn'] != null ? json['isbn'][0] : '';
     final String coverImageUrl = json['cover_edition_key'] != null ? 'https://covers.openlibrary.org/b/olid/${json['cover_edition_key']}-M.jpg' : '';
     final List<dynamic> categoriesJson = json['subject'] ?? [];
@@ -80,7 +80,7 @@ class Book {
 
     return Book(
       title: title,
-      author: author,
+      authors: authors,
       isbn: isbn,
       coverImageUrl: coverImageUrl,
       categories: categories,
@@ -89,7 +89,7 @@ class Book {
 
   Book({
     required this.title,
-    required this.author,
+    required this.authors,
     required this.isbn,
     required this.coverImageUrl,
     required this.categories,
