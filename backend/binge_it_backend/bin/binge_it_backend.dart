@@ -1,10 +1,11 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'api_key.dart';
+import 'models.dart';
 
 void main() async {
-  String a = await recommend('james bond', 'movie');
-  findMovie(a);
+  // String a = await recommend('james bond', 'movie');
+  var media = await findMedia('', MediaType.movie);
 }
 
 Future<String> recommend(String watched, String recommendWhat) async {
@@ -23,15 +24,32 @@ Future<String> recommend(String watched, String recommendWhat) async {
   }
 }
 
-Future<void> findMovie(String movieName) async {
-  final url = 'https://api.themoviedb.org/3/search/movie?api_key=$tmdbApiKey&query=$movieName';
-  var response = await http.get(Uri.parse(url));
+Future<dynamic> findMedia(String query, MediaType mediaType) async {
+  final baseUrl = 'https://api.themoviedb.org/3';
+  final mediaPath = mediaType == MediaType.movie ? '/movie' : '/tv';
+  final response = await http.get(Uri.parse('$baseUrl/search/$mediaPath?api_key=$tmdbApiKey&query=$query'));
+
   if (response.statusCode == 200) {
-    var body = jsonDecode(response.body);
-    var firstResult = body['results'][0];
-    print('Title: ${firstResult['title']}');
-    print('Release Date: ${firstResult['release_date']}');
+    final Map<String, dynamic> data = jsonDecode(response.body);
+
+    if (data['success'] == false) {
+      throw Exception(data['status_message']);
+    }
+
+    if (data['results'].isEmpty) {
+      throw Exception('No results found');
+    }
+
+    if (mediaType == MediaType.movie) {
+      final List<dynamic> results = data['results'];
+      final Movie movie = Movie.fromJson(results.first);
+      return movie;
+    } else {
+      final List<dynamic> results = data['results'];
+      final TVShow tvShow = TVShow.fromJson(results.first);
+      return tvShow;
+    }
   } else {
-    print('error');
+    throw Exception('Failed to load media');
   }
 }
