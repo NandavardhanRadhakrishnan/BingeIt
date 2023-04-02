@@ -1,6 +1,7 @@
 enum MediaType {
   movie,
   tv,
+  book,
 }
 
 class Movie {
@@ -32,7 +33,7 @@ class Movie {
       overview: json['overview'],
       genres: genres,
       releaseDate: json['release_date'],
-      posterPath: json['poster_path'],
+      posterPath: 'https://image.tmdb.org/t/p/w500${json['poster_path']}',
       rating: json['vote_average'].toDouble(),
     );
   }
@@ -59,4 +60,38 @@ class TVShow {
       posterUrl: json['poster_path'] == null ? null : 'https://image.tmdb.org/t/p/w500${json['poster_path']}',
     );
   }
+}
+
+class Book {
+  final String title;
+  final String author;
+  final String isbn;
+  final String coverImageUrl;
+  final List<String> categories;
+
+  factory Book.fromJson(Map<String, dynamic> json) {
+    final String title = json['title'] != null ? json['title'] : '';
+    final List<dynamic> authors = json['author_name'] ?? [];
+    final String author = authors.isNotEmpty ? authors.first : '';
+    final String isbn = json['isbn'] != null ? json['isbn'][0] : '';
+    final String coverImageUrl = json['cover_edition_key'] != null ? 'https://covers.openlibrary.org/b/olid/${json['cover_edition_key']}-M.jpg' : '';
+    final List<dynamic> categoriesJson = json['subject'] ?? [];
+    final List<String> categories = categoriesJson.map((category) => category.toString()).toList();
+
+    return Book(
+      title: title,
+      author: author,
+      isbn: isbn,
+      coverImageUrl: coverImageUrl,
+      categories: categories,
+    );
+  }
+
+  Book({
+    required this.title,
+    required this.author,
+    required this.isbn,
+    required this.coverImageUrl,
+    required this.categories,
+  });
 }
