@@ -3,16 +3,16 @@ import main from "./bingeIt";
 import MovieListing from "./components/MovieListing";
 import TvListing from "./components/TvListing";
 import BookListing from "./components/BookListing";
-import { Movie, TVShow, Book, genreLookup } from "./models";
-import StarRating from "./components/StarRating";
-import TagGroup from "./components/TagGroup";
+import { Movie, TVShow, Book } from "./models";
+
+// TODO handle input and switch output
 
 function App() {
   // const [results, setResults] = useState<(Movie | TVShow | Book)[]>([]);
   const [results, setResults] = useState([]);
 
   const watched = "interstellar";
-  const recommendWhat = "book";
+  const recommendWhat = "tv";
   useEffect(() => {
     async function fetchData() {
       const data = await main(watched, recommendWhat);
@@ -24,6 +24,7 @@ function App() {
 
   // return (
   //   <div>
+  //     {/* <button onClick={foo()}></button> */}
   //     <h1>Recommendations</h1>
   //     <div className="row card-columns">
   //       {results.map((item: Movie, index: number) => (
@@ -43,21 +44,40 @@ function App() {
 
   return (
     <div>
+      {/* <button onClick={foo()}></button> */}
       <h1>Recommendations</h1>
       <div className="row card-columns">
-        {results.map((item: Book, index: number) => (
-          <BookListing
+        {results.map((item: TVShow, index: number) => (
+          <TvListing
             key={index}
             title={item.title}
-            authors={item.authors}
+            overview={item.overview}
             rating={item.rating}
-            coverImageUrl={item.coverImageUrl}
-            categories={item.categories}
+            posterUrl={item.posterUrl}
+            genres={item.genres}
           />
         ))}
       </div>
     </div>
   );
+
+  // return (
+  //   <div>
+  //     <h1>Recommendations</h1>
+  //     <div className="row card-columns">
+  //       {results.map((item: Book, index: number) => (
+  //         <BookListing
+  //           key={index}
+  //           title={item.title}
+  //           authors={item.authors}
+  //           rating={item.rating}
+  //           coverImageUrl={item.coverImageUrl}
+  //           categories={item.categories}
+  //         />
+  //       ))}
+  //     </div>
+  //   </div>
+  // );
 
   // const ratingsArray = [];
   // for (let i = 0; i <= 5; i += 0.5) {
