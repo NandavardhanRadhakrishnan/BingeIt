@@ -7,12 +7,13 @@ import StarRating from "./components/StarRating";
 import TagGroup from "./components/TagGroup";
 
 function App() {
+  // const [results, setResults] = useState<(Movie | TVShow | Book)[]>([]);
   const [results, setResults] = useState([]);
 
+  const watched = "interstellar";
+  const recommendWhat = "movie";
   useEffect(() => {
     async function fetchData() {
-      const watched = "interstellar";
-      const recommendWhat = "movie";
       const data = await main(watched, recommendWhat);
       setResults(data);
     }
@@ -24,7 +25,7 @@ function App() {
     <div>
       <h1>Recommendations</h1>
       <div className="row card-columns">
-        {results.map((item: Movie, index) => (
+        {results.map((item: Movie, index: number) => (
           <MovieListing
             key={index}
             title={item.title}
