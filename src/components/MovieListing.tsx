@@ -25,7 +25,7 @@ function MovieListing({
         <h4 className="card-title">{title}</h4>
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <div>
-            <StarRating rating={rating}></StarRating>
+            <StarRating rating={rating} />
           </div>
           <span className="card-text">{releaseDate}</span>
         </div>
