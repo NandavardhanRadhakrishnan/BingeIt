@@ -1,21 +1,9 @@
 import Groq from "groq-sdk";
 import axios from "axios";
-import { Movie, TVShow, Book, genreLookup } from "./models";
+import { Movie, TVShow, Book} from "./models";
 
 const tmdbApiKey = "798d0f567e46dc804c56e50cc84c0e5b";
 const groqApiKey = "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"
-
-// export default async function main(watched: string, recommendWhat: "movie" | "tv" | "book"): Promise<(Movie | TVShow | Book)[]> {
-//   const recommended = await recommend(watched, recommendWhat);
-//   const listOfMedia = recommended.similar;
-//   const results: (Movie | TVShow | Book)[] = [];
-  
-//   for (const item of listOfMedia) {
-//     results.push(await findMedia(item, recommendWhat));
-//   }
-
-//   return results;
-// }
 
 export async function recommend(watched: string, recommendWhat: "movie" | "tv" | "book"): Promise<{ similar: string[] }> {
   const groq = new Groq({

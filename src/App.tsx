@@ -1,58 +1,10 @@
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import { recommend, findMovie, findTvShow, findBook } from "./bingeIt";
 import MovieGroup from "./components/MovieGroup";
 import TvGroup from "./components/TvGroup";
 import BookGroup from "./components/BookGroup";
 import Loading from "./components/Loading";
 import { Movie, TVShow, Book } from "./models";
-
-// TODO handle input and switch output
-
-// function App() {
-//   // const [results, setResults] = useState<(Movie | TVShow | Book)[]>([]);
-//   const [results, setResults] = useState([]);
-
-//   const watched = "interstellar";
-//   const recommendWhat = "tv";
-//   useEffect(() => {
-//     async function fetchData() {
-//       const data = await main(watched, recommendWhat);
-//       setResults(data);
-//     }
-
-//     fetchData();
-//   }, []);
-
-//   return (
-//     <div>
-//       <h1>Recommendations</h1>
-//     </div>
-//   );
-
-// const ratingsArray = [];
-// for (let i = 0; i <= 5; i += 0.5) {
-//   ratingsArray.push(i);
-// }
-// return (
-//   <>
-//     {ratingsArray.map((r, i) => (
-//       <>
-// <StarRating rating={r} />
-//         <br />
-//       </>
-//     ))}
-//   </>
-// );
-
-// return (
-//   <>
-//     <h1>hello</h1>
-//     <TagGroup tags={["hello", "world"]}></TagGroup>
-//   </>
-// );
-// }
-
-// export default App;
 
 function App() {
   const [watched, setWatched] = useState("");
@@ -133,10 +85,8 @@ function App() {
 
       <div className="w-100 mt-5">
         {" "}
-        {/* Add margin top for space */}
         <div className="custom-container">
           {" "}
-          {/* Apply custom-container class */}
           {loading && <Loading />}
           {!loading && movies.length > 0 && <MovieGroup movies={movies} />}
           {!loading && tvShows.length > 0 && <TvGroup tvshows={tvShows} />}
