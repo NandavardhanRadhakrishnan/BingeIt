@@ -3,22 +3,23 @@ import axios from "axios";
 import { Movie, TVShow, Book, genreLookup } from "./models";
 
 const tmdbApiKey = "798d0f567e46dc804c56e50cc84c0e5b";
+const groqApiKey = "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"
 
-export default async function main(watched: string, recommendWhat: "movie" | "tv" | "book"): Promise<(Movie | TVShow | Book)[]> {
-  const recommended = await recommend(watched, recommendWhat);
-  const listOfMedia = recommended.similar;
-  const results: (Movie | TVShow | Book)[] = [];
+// export default async function main(watched: string, recommendWhat: "movie" | "tv" | "book"): Promise<(Movie | TVShow | Book)[]> {
+//   const recommended = await recommend(watched, recommendWhat);
+//   const listOfMedia = recommended.similar;
+//   const results: (Movie | TVShow | Book)[] = [];
   
-  for (const item of listOfMedia) {
-    results.push(await findMedia(item, recommendWhat));
-  }
+//   for (const item of listOfMedia) {
+//     results.push(await findMedia(item, recommendWhat));
+//   }
 
-  return results;
-}
+//   return results;
+// }
 
 export async function recommend(watched: string, recommendWhat: "movie" | "tv" | "book"): Promise<{ similar: string[] }> {
   const groq = new Groq({
-    apiKey: "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",
+    apiKey: groqApiKey,
     dangerouslyAllowBrowser: true,
   });
 
@@ -57,9 +58,74 @@ export async function recommend(watched: string, recommendWhat: "movie" | "tv" |
   }
 }
 
-export async function findMedia(query: string, mediaType: "movie" | "tv" | "book"): Promise<Movie | TVShow | Book> {
-  if (mediaType === "book") {
-    const baseUrl = "http://openlibrary.org/search.json";
+export async function findMovie(query:string):Promise<Movie> {
+  const baseUrl = "https://api.themoviedb.org/3";
+  const mediaPath="/movie";
+  
+  try {
+    const response = await axios.get(`${baseUrl}/search${mediaPath}`, {
+      params: {
+        api_key: tmdbApiKey,
+        query: query,
+      },
+    });
+
+    if (response.status === 200) {
+      const data = response.data;
+
+      if (!data.results || data.results.length === 0) {
+        throw new Error("No results found");
+      }
+
+      
+      const movie = Movie.fromJson(data.results[0]);
+      return movie;
+
+    } else {
+      throw new Error("Failed to load media");
+    }
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to load media");
+  }
+
+}
+
+export async function findTvShow(query:string):Promise<TVShow> {
+  const baseUrl = "https://api.themoviedb.org/3";
+  const mediaPath="/tv";
+  
+  try {
+    const response = await axios.get(`${baseUrl}/search${mediaPath}`, {
+      params: {
+        api_key: tmdbApiKey,
+        query: query,
+      },
+    });
+
+    if (response.status === 200) {
+      const data = response.data;
+
+      if (!data.results || data.results.length === 0) {
+        throw new Error("No results found");
+      }
+
+      
+      const movie = TVShow.fromJson(data.results[0]);
+      return movie;
+
+    } else {
+      throw new Error("Failed to load media");
+    }
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to load media");
+  }
+
+}
+
+export async function findBook(query: string):Promise<Book> {
+  const baseUrl = "http://openlibrary.org/search.json";
 
     try {
       const response = await axios.get(`${baseUrl}?q=${query}`);
@@ -78,38 +144,4 @@ export async function findMedia(query: string, mediaType: "movie" | "tv" | "book
       console.error(error);
       throw new Error("Failed to load media");
     }
-  } else {
-    const baseUrl = "https://api.themoviedb.org/3";
-    const mediaPath = mediaType === "movie" ? "/movie" : "/tv";
-
-    try {
-      const response = await axios.get(`${baseUrl}/search${mediaPath}`, {
-        params: {
-          api_key: tmdbApiKey,
-          query: query,
-        },
-      });
-
-      if (response.status === 200) {
-        const data = response.data;
-
-        if (!data.results || data.results.length === 0) {
-          throw new Error("No results found");
-        }
-
-        if (mediaType === "movie") {
-          const movie = Movie.fromJson(data.results[0]);
-          return movie;
-        } else {
-          const tvShow = TVShow.fromJson(data.results[0]);
-          return tvShow;
-        }
-      } else {
-        throw new Error("Failed to load media");
-      }
-    } catch (error) {
-      console.error(error);
-      throw new Error("Failed to load media");
-    }
-  }
 }
