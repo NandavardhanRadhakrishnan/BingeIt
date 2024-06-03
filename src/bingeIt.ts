@@ -2,9 +2,8 @@ import Groq from "groq-sdk";
 import axios from "axios";
 import { Movie, TVShow, Book} from "./models";
 
-// TODO hide keys
-const tmdbApiKey = "798d0f567e46dc804c56e50cc84c0e5b";
-const groqApiKey = "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"
+const tmdbApiKey = import.meta.env.VITE_TMDB_API_KEY;
+const groqApiKey = import.meta.env.VITE_GROQ_API_KEY;
 
 export async function recommend(watched: string, recommendWhat: "movie" | "tv" | "book"): Promise<{ similar: string[] }> {
   const groq = new Groq({
